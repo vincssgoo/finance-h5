@@ -30,5 +30,6 @@ export function getTypeList() {
   return axios({
     url: "/api/backend/payType/index",
     method: "get",
+    params:{status:1}
   })
 }

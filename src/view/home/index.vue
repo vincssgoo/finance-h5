@@ -2,10 +2,6 @@
   <div class="container">
     <div class="desc">
       <span>支出说明</span>
-      <!-- <textarea v-model="text_value"
-                placeholder="请输入支出说明"
-                placeholder-class="placeholder"
-                cols="5"></textarea> -->
       <el-input type="textarea"
                 v-model="form.desc"
                 placeholder="请输入支出说明"
@@ -20,8 +16,8 @@
       </el-date-picker>
     </div>
     <div class="money">
-      <span>支出金钱</span>
-      <el-input type="text"
+      <span>支出金额</span>
+      <el-input type="number"
                 v-model="form.price"
                 placeholder="请输入支出金额"
                 class="money_input"></el-input>
@@ -33,7 +29,8 @@
                  class="selecter">
         <el-option v-for="item in typeList"
                    :label="item.title"
-                   :value="item.id">
+                   :value="item.id"
+                   :key="item.id">
         </el-option>
       </el-select>
     </div>
@@ -51,39 +48,31 @@
                 placeholder-class="placeholder"
                 cols="5"></textarea> -->
       <el-input type="textarea"
-                v-model="form.content"
+                v-model="content"
                 placeholder="请输入备注"
                 class="remark_input"></el-input>
     </div>
     <div class="proof">
       <span>支出凭证</span>
-      <!-- <textarea v-model="text_value"
-                placeholder="请输入支出说明"
-                placeholder-class="placeholder"
-                cols="5"></textarea> -->
-      <!-- <el-upload action="#"
-                 list-type="picture-card"
-                 :on-preview="handlePictureCardPreview"
-                 :on-remove="handleRemove"
-                 :http-request="uploadAvatar"
-                 :before-upload="beforeAvatarUpload"
-                 :file-list="fileList"
-                 class="uploader">
-        <i class="el-icon-plus"></i>
-      </el-upload>
-      <el-dialog :visible.sync="dialogVisible">
-        <img width="100%"
-             :src="dialogImageUrl"
-             alt="">
-      </el-dialog> -->
-      <UploadList :list="proofList"
+      <UploadList  v-model="form.pay_proof"
                   style="margin-top:10px;"></UploadList>
 
     </div>
     <div class="btn">
       <el-button type="primary"
                  round
+                 :loading="btnLoading"
                  @click="confirm">提交</el-button>
+      <!-- <mt-button @click.native="confirm" size="large">提交</mt-button> -->
+    </div>
+    <div>
+      <!-- <confirm
+      v-model="questionStatus"
+      title="提醒"
+      @on-cancel="onCancel"
+      @on-confirm="onConfirm">
+        <p style="text-align:center;">确认提交</p>
+      </confirm> -->
     </div>
   </div>
 </template>
@@ -91,6 +80,7 @@
 <script>
 import UploadList from '@/components/UploadList'
 import { saveData, getTypeList } from '@/network/home'
+import { MessageBox } from 'mint-ui';
 var moment = require("moment");
 export default {
   name: '',
@@ -103,39 +93,78 @@ export default {
         price: '',
         type_id: '',
         applicant: '',
-        content: '',
         pay_proof: [],
       },
+      formExplain: {
+        desc: '支出说明',
+        pay_datetime: '支出时间',
+        price: '支出金额',
+        type_id: '支出类型',
+        applicant: '申请人',
+        pay_proof: '支出凭证',
+      },
+      content:'',
       typeList: null,
-      proofList: [],
       btnLoading: false,
       listLoading: false,
+      questionStatus: false,
     }
   },
   components: {
-    UploadList,
+    UploadList,MessageBox
   },
   created () {
     this.getList()
   },
   methods: {
-    confirm () {
-      this.btnLoading = true;
-      console.log(this.form);
-      if (this.proofList) {
-        this.form.pay_proof = this.proofList
+    resetForm() {
+      this.form = {
+        desc: '',
+        pay_datetime: '',
+        price: '',
+        type_id: '',
+        applicant: '',
+        pay_proof: [],
       }
-      this.form.pay_datetime = moment(this.form.pay_datetime).format('YYYY-M-DD h:mm:ss')
-      saveData(this.form).then(() => {
-        // this.getTypeList();
-        this.$message({
-          type: "success",
-          message: "操作成功!"
-        });
-        this.backIndex()
-      })
+      this.content = ''
+    },
+    confirm () {
+      // for(let i in this.form){
+      //   if(this.form[i] === '' || this.form[i].length == 0){
+      //     this.$message({
+      //       type: "error",
+      //       message: this.formExplain[i]+"不能为空",
+      //       duration:1500,
+      //       showClose: true,
+      //     });
+      //     return
+      //   }
+      // }
+      MessageBox.confirm('确定提交吗?', '提示');
+      // this.form.content = this.content ? this.content : ''
+      // console.log(this.form)
+      // this.questionStatus = true
+      // this.btnLoading = true;
+      // this.form.pay_datetime = moment(this.form.pay_datetime).format('YYYY-M-DD h:mm:ss')
+      // this.onConfirm()
+    },
+    onCancel() {
+      this.questionStatus = false
+      this.btnLoading = false;
+    },
+    onConfirm() {
+      saveData(this.form).then(res=> {
+          this.$message({
+            type: "success",
+            message: "提交成功!",
+            duration:1500,
+            showClose: true,
+          });
+          this.resetForm()
+        })
         .finally(() => {
           this.btnLoading = false;
+          this.questionStatus = false
         });
     },
     getList () {
