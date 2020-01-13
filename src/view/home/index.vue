@@ -48,13 +48,13 @@
                 placeholder-class="placeholder"
                 cols="5"></textarea> -->
       <el-input type="textarea"
-                v-model="content"
+                v-model="form.content"
                 placeholder="请输入备注"
                 class="remark_input"></el-input>
     </div>
     <div class="proof">
       <span>支出凭证</span>
-      <UploadList  v-model="form.pay_proof"
+      <UploadList v-model="form.pay_proof"
                   style="margin-top:10px;"></UploadList>
 
     </div>
@@ -103,7 +103,7 @@ export default {
         applicant: '申请人',
         pay_proof: '支出凭证',
       },
-      content:'',
+      content: '',
       typeList: null,
       btnLoading: false,
       listLoading: false,
@@ -111,13 +111,13 @@ export default {
     }
   },
   components: {
-    UploadList,MessageBox
+    UploadList, MessageBox
   },
   created () {
     this.getList()
   },
   methods: {
-    resetForm() {
+    resetForm () {
       this.form = {
         desc: '',
         pay_datetime: '',
@@ -140,28 +140,64 @@ export default {
       //     return
       //   }
       // }
-      MessageBox.confirm('确定提交吗?', '提示');
+      // MessageBox.confirm('确定提交吗?', '提示');
       // this.form.content = this.content ? this.content : ''
       // console.log(this.form)
       // this.questionStatus = true
       // this.btnLoading = true;
-      // this.form.pay_datetime = moment(this.form.pay_datetime).format('YYYY-M-DD h:mm:ss')
+      this.form.price = parseFloat(this.form.price).toFixed(2)
+      this.form.pay_datetime = moment(this.form.pay_datetime).format('YYYY-M-DD h:mm:ss')
       // this.onConfirm()
+      this.$confirm('确定上传吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        saveData(this.form).then(res => {
+          if (res.code == 0) {
+            this.$message({
+              type: "success",
+              message: "提交成功!",
+              duration: 1500,
+              showClose: true,
+            });
+            this.resetForm()
+          }
+          else {
+            // this.$message({
+            //   showClose: true,
+            //   message: 'res.msg',
+            //   type: 'error'
+            // });
+            this.$message.error(res.msg)
+          }
+
+        })
+          .finally(() => {
+            this.btnLoading = false;
+            this.questionStatus = false
+          });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
-    onCancel() {
+    onCancel () {
       this.questionStatus = false
       this.btnLoading = false;
     },
-    onConfirm() {
-      saveData(this.form).then(res=> {
-          this.$message({
-            type: "success",
-            message: "提交成功!",
-            duration:1500,
-            showClose: true,
-          });
-          this.resetForm()
-        })
+    onConfirm () {
+      saveData(this.form).then(res => {
+        this.$message({
+          type: "success",
+          message: "提交成功!",
+          duration: 1500,
+          showClose: true,
+        });
+        this.resetForm()
+      })
         .finally(() => {
           this.btnLoading = false;
           this.questionStatus = false
@@ -170,14 +206,15 @@ export default {
     getList () {
       this.listLoading = true;
       getTypeList().then(response => {
-        this.length = response.data.length
         this.typeList = response.data.data;
         this.listLoading = false;
         console.log(this.typeList);
+        for (let i = 0; i < this.typeList.length; i++) {
+          if (this.typeList[i].status == 2) {
+            this.typeList.splice(i, 1)
+          }
+        }
       });
-      for (let i = 0; i < this.length; i++) {
-        this.type.push(this.typeList[i].title)
-      }
     },
   }
 }
@@ -192,6 +229,9 @@ body {
     font-weight: bold;
     margin-top: 20px;
     margin-left: 8px;
+  }
+  .el-message-box {
+    width: 300px;
   }
 }
 .container {
