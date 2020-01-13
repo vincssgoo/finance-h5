@@ -111,7 +111,7 @@ export default {
     }
   },
   components: {
-    UploadList, MessageBox
+    UploadList,
   },
   created () {
     this.getList()
@@ -129,24 +129,21 @@ export default {
       this.content = ''
     },
     confirm () {
-      // for(let i in this.form){
-      //   if(this.form[i] === '' || this.form[i].length == 0){
-      //     this.$message({
-      //       type: "error",
-      //       message: this.formExplain[i]+"不能为空",
-      //       duration:1500,
-      //       showClose: true,
-      //     });
-      //     return
-      //   }
-      // }
-      // MessageBox.confirm('确定提交吗?', '提示');
-      // this.form.content = this.content ? this.content : ''
-      // console.log(this.form)
-      // this.questionStatus = true
-      // this.btnLoading = true;
+      for (let i in this.form) {
+        if (this.form[i] === '' || this.form[i].length == 0) {
+          this.$message({
+            type: "error",
+            message: this.formExplain[i] + "不能为空",
+            duration: 1500,
+            showClose: true,
+          });
+          return
+        }
+      }
+      this.form.content = this.content ? this.content : ''
       this.form.price = parseFloat(this.form.price).toFixed(2)
       this.form.pay_datetime = moment(this.form.pay_datetime).format('YYYY-M-DD h:mm:ss')
+      this.btnLoading = true;
       // this.onConfirm()
       this.$confirm('确定上传吗?', '提示', {
         confirmButtonText: '确定',
