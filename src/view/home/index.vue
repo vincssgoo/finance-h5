@@ -42,7 +42,7 @@
                 class="apply_input"></el-input>
     </div>
     <div class="remark">
-      <span>备注</span>
+      <span>备注(选填)</span>
       <!-- <textarea v-model="text_value"
                 placeholder="请输入支出说明"
                 placeholder-class="placeholder"
@@ -94,6 +94,7 @@ export default {
         type_id: '',
         applicant: '',
         pay_proof: [],
+        content: '',
       },
       formExplain: {
         desc: '支出说明',
@@ -125,22 +126,30 @@ export default {
         type_id: '',
         applicant: '',
         pay_proof: [],
+        content: '',
       }
-      this.content = ''
+      // this.content = ''
     },
     confirm () {
+      console.log(this.formExplain);
+
       for (let i in this.form) {
         if (this.form[i] === '' || this.form[i].length == 0) {
-          this.$message({
-            type: "error",
-            message: this.formExplain[i] + "不能为空",
-            duration: 1500,
-            showClose: true,
-          });
-          return
+          if (i === 'content') {
+            console.log(123);
+          }
+          else {
+            this.$message({
+              type: "error",
+              message: this.formExplain[i] + "不能为空",
+              duration: 1500,
+              showClose: true,
+              offset: 40
+            });
+          }
         }
       }
-      this.form.content = this.content ? this.content : ''
+      // this.form.content = this.content ? this.content : ''
       this.form.price = parseFloat(this.form.price).toFixed(2)
       this.form.pay_datetime = moment(this.form.pay_datetime).format('YYYY-M-DD h:mm:ss')
       this.btnLoading = true;
@@ -157,6 +166,7 @@ export default {
               message: "提交成功!",
               duration: 1500,
               showClose: true,
+              offset: 40
             });
             this.resetForm()
           }
@@ -166,7 +176,14 @@ export default {
             //   message: 'res.msg',
             //   type: 'error'
             // });
-            this.$message.error(res.msg)
+            // this.$message.error(res.msg)
+            this.$message({
+              type: "error",
+              message: res.msg,
+              duration: 1500,
+              showClose: true,
+              offset: 40
+            });
           }
 
         })
@@ -175,9 +192,19 @@ export default {
             this.questionStatus = false
           });
       }).catch(() => {
+        this.btnLoading = false;
+        // this.form = {
+        //   desc: '',
+        //   pay_datetime: '',
+        //   price: '',
+        //   type_id: '',
+        //   applicant: '',
+        //   pay_proof: [],
+        // }
         this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: '已取消上传',
+          offset: 40
         });
       });
     },

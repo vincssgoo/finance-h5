@@ -4,25 +4,24 @@
          v-for="(item, index) in list"
          :key="index"
          :style="{width: width,height: height}"
-         @mouseover="showOptionIndex = index"
+         @click="showOptionIndex = index"
          @mouseout="showOptionIndex = -1">
-      <img :src="item"
-           class="avatar"
-           v-if="videoType.indexOf(item.substring(item.lastIndexOf('.')+1)) == -1" />
-      <video :src="item"
-             class="avatar"
-             v-else></video>
-      <div v-if="index == showOptionIndex"
+      <div class="avatar">
+        <img :src="item"
+             v-if="videoType.indexOf(item.substring(item.lastIndexOf('.')+1)) == -1">
+        <video :src="item"
+               v-else></video>
+      </div>
+
+      <img src="../../assets/del.png"
+           alt=""
+           class="delete"
+           @click="handleRemove(index)">
+      <!-- <div v-if="index == showOptionIndex"
            class="option">
-        <i class="option-icon el-icon-back"
-           @click="handleLeft(index)"></i>
         <i class="option-icon el-icon-delete"
            @click="handleRemove(index)"></i>
-        <i class="option-icon el-icon-zoom-in"
-           @click="handleWatch(index)"></i>
-        <i class="option-icon el-icon-right"
-           @click="handleRight(index)"></i>
-      </div>
+      </div> -->
     </div>
     <el-upload v-loading="loading"
                :action="qiniu.actionPath"
@@ -148,6 +147,8 @@ export default {
       );
     },
     handleRemove (index) {
+      console.log(123);
+
       this.list.splice(index, 1);
     },
     handleWatch (index) {
@@ -165,52 +166,67 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .avatar {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  .option {
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    font-size: 18px;
-    color: white;
-    option-icon {
-      flex: 1 1 auto;
-    }
-  }
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
 .image-container {
   display: flex;
   flex-wrap: wrap;
+  .upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar {
+      overflow: hidden;
+      img {
+        width: 120px;
+        height: 120px;
+        display: block;
+      }
+    }
+    .delete {
+      position: absolute;
+      // background-color: #000;
+      overflow: inherit;
+      z-index: 9;
+      top: -9px;
+      right: 0;
+      width: 22px;
+      height: 22px;
+    }
+    .option {
+      // -webkit-tap-highlight-color: transparent;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-size: 18px;
+      color: white;
+      option-icon {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
 }
 </style>
