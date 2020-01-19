@@ -43,10 +43,6 @@
     </div>
     <div class="remark">
       <span>备注(选填)</span>
-      <!-- <textarea v-model="text_value"
-                placeholder="请输入支出说明"
-                placeholder-class="placeholder"
-                cols="5"></textarea> -->
       <el-input type="textarea"
                 v-model="form.content"
                 placeholder="请输入备注"
@@ -63,16 +59,6 @@
                  round
                  :loading="btnLoading"
                  @click="confirm">提交</el-button>
-      <!-- <mt-button @click.native="confirm" size="large">提交</mt-button> -->
-    </div>
-    <div>
-      <!-- <confirm
-      v-model="questionStatus"
-      title="提醒"
-      @on-cancel="onCancel"
-      @on-confirm="onConfirm">
-        <p style="text-align:center;">确认提交</p>
-      </confirm> -->
     </div>
   </div>
 </template>
@@ -86,7 +72,6 @@ export default {
   name: '',
   data () {
     return {
-      // text_value: `100亿元项目，世界500强、中国500强及跨国公司投构100亿元项目，世界500强、中国500强及跨国公司机构`,
       form: {
         desc: '',
         pay_datetime: '',

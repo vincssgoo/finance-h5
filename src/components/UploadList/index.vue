@@ -112,9 +112,12 @@ export default {
         this.qiniu.postData.token = response.data.token;
       }
     });
+    console.log(this.list);
   },
 
   methods: {
+
+
     beforeUpload (file) {
       // 上传前需生成图片的GUID唯一名
       this.qiniu.postData.key = guid() + "." + file.type.split("/")[1];
